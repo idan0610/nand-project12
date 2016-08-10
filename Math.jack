@@ -1,0 +1,127 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Math.jack
+
+/**
+ * A basic math library.
+ */
+class Math {
+
+	static Array twoTothe;
+	
+    /** Initializes the library. */
+    function void init() {
+		var int j;
+		let twoTothe = Array.new(16);
+		let j = 1;
+		let twoTothe[0] = 1;
+		while (j<16){
+			let twoTothe[j] = twoTothe[j-1] + twoTothe[j-1];
+			let j = j + 1;
+		}
+		return;
+    }
+
+    /** Returns the absolute value of x. */
+    function int abs(int x) {
+		if (x < 0){
+			return -x;
+	}
+	return x;
+    }
+
+    /** Returns the product of x and y. */
+    function int multiply(int x, int y) {
+		var int sum;
+		var int shiftedx;
+		var int j;
+		let j = 0;
+		let sum = 0;
+		let shiftedx = x;
+		while (j < 16){
+			if (Math.bit(y,j)){
+				let sum = sum + shiftedx;
+			}
+			let shiftedx = shiftedx + shiftedx;
+			let j = j +1;
+		}
+		return sum;
+    }
+
+
+    /** Returns the integer part of x/y. */
+    function int divide(int x, int y) {
+		var int q;
+		var int absx;
+		var int absy;
+		var int res;
+		
+		let absx = Math.abs(x);
+		let absy = Math.abs(y);
+		
+		if (y = 0){
+			do Sys.error(3);
+		}
+		if (absy > absx) {
+			return 0;
+		}
+		let q = Math.divide(absx, (2 * absy));
+		if ((absx - (2 * q * absy)) < absy) {
+			
+			let res = 2 * q;
+		} 
+		else {
+			let res = (2 * q) + 1;
+		}
+		if (( (x < 0) & (y>0) ) |  ((x > 0) & (y < 0))){
+			let res = -res;
+		}
+		return res;
+    }
+    
+
+    /** Returns the integer part of the square root of x. */
+    function int sqrt(int x) {
+		var int y, j;
+		
+		if (x < 0){
+			do Sys.error(4);
+		}
+		let y = 0;
+		let j = 7;
+		while (j > -1){
+			if (~(((y + twoTothe[j])* (y + twoTothe[j])) > x) & (((y + twoTothe[j]) * (y + twoTothe[j])) > 0)){
+				let y = y + twoTothe[j];
+			}
+			let j = j -1;
+		}
+		return y;
+    }
+
+    /** Returns the greater number. */
+    function int max(int a, int b) {
+		if (a > b){
+			return a;
+		}
+		return b;
+    }
+
+    /** Returns the smaller number. */
+    function int min(int a, int b) {
+		if (a < b){
+			return a;
+		}
+		return b;
+    }
+	
+	// bit - true if the j bit of x is 1
+	function boolean bit(int x,int j) {
+		var int b;
+		let b = x & twoTothe[j];
+		if (~(b = 0)){
+			return true;
+		}
+		return false;
+	}
+}

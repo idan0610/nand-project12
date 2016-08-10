@@ -1,0 +1,118 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Memory.jack
+
+/**
+ * Memory operations library.
+ */ 
+class Memory {
+
+	static int memory;
+	static int freeList;
+
+    /** Initializes memory parameters. */
+    function void init() {
+		let memory = 0;
+		let freeList = 2048;
+		let freeList[0] = 14435;
+		let freeList[1] = null;
+		return;
+    }
+
+    /** Returns the value of the main memory at the given address. */
+    function int peek(int address) {
+		return memory[address];
+    }
+
+    /** Sets the value of the main memory at this address
+     *  to the given value. */
+    function void poke(int address, int value) {
+		let memory[address] = value;
+		return ;
+    }
+
+    /** finds and allocates from the heap a memory block of the 
+     *  specified size and returns a reference to its base address. */
+    function int alloc(int size) {
+		var Array prevSegment, curr, segment, prev;
+		var int length;
+		
+		if (size < 1) {
+			do Sys.error(5);
+		}
+		
+		let prev = null;
+		let prevSegment = null;
+		let segment = freeList;
+		let curr = freeList;
+		
+		while (~(curr[1] = null)) {
+			if ((curr[0] > size) & (curr[0] < segment[0])) {
+				let prevSegment = prev;
+				let segment = curr;
+			}
+			
+			let prev = curr;
+			let curr = curr[1];
+		}
+		
+		if (segment[0] < size) {
+			do Sys.error(6);
+		}
+		
+		if (segment = freeList) {
+			let freeList = Memory.allocation(segment, size);
+		}
+		else {
+			let prevSegment[1] = Memory.allocation(segment, size);
+		}
+		
+		return segment + 1;
+    }
+    
+    function int allocation(Array segment, int size) {
+		var Array next;
+		
+		if (segment[0] > (size + 3)) {
+			let next = segment + size + 1;
+			let next[0] = segment[0] - size - 2;
+			let next[1] = segment[1];
+			
+			let segment[0] = size;
+		}
+		else {
+			let next = segment[1];
+		}
+		
+		return next;
+    }
+
+    /** De-allocates the given object and frees its space. */
+    function void deAlloc(int object) {
+		var Array segment, lastFree, curr, next;
+		
+		let curr = freeList;
+		let lastFree = null;
+		while(~(curr = null)) {
+			if (curr < (object - 1)) {
+				let lastFree = curr;
+			}
+			let curr = curr[1];
+		}
+		
+		if (lastFree = null) {
+			// no prev free segment, set freeList to the deallocated block
+			let object[0] = freeList;
+			let freeList = object - 1;
+ 		}
+ 		else {
+			// found pre free segment, set it's next to the deallocated block
+			let next = lastFree[1];
+			let lastFree[1] = object - 1;
+			let object[0] = next;
+ 		}
+		
+		return;
+    }    
+}

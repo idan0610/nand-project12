@@ -1,0 +1,173 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/String.jack
+
+/**
+ * Represents a String object. Implements the String type.
+ */
+class String {
+
+	field Array str ;
+	field int length;
+	field int max;
+	
+    /** Constructs a new empty String with a maximum length of maxLength. */
+    constructor String new(int maxLength) {
+		if (maxLength < 0 ){
+			do Sys.error(14);
+		}
+		let length = 0;
+		let max = maxLength;
+		if (maxLength  > 0 ){
+			let str = Array.new(maxLength);
+		}
+		return this;
+    
+    }
+
+    /** De-allocates the string and frees its space. */
+    method void dispose() {
+		if (max > 0 ){
+			do str.dispose();
+		}
+		let length = 0;
+		return;
+    }
+
+    /** Returns the current length of this String. */
+    method int length() {
+		return length;
+    }
+
+    /** Returns the character at location j. */
+    method char charAt(int j) {
+		if (j < 0){
+			do Sys.error(15);
+		}
+
+    	if (~(j < length)){
+			do Sys.error(15);
+		}
+		return str[j];
+    }
+
+    /** Sets the j'th character of this string to be c. */
+    method void setCharAt(int j, char c) {
+    	if (j < 0){
+			do Sys.error(16);
+		}
+
+		if (~(j < length)){
+			do Sys.error(16);
+		}
+		let str[j] = c;
+		return;
+    }
+
+    /** Appends the character c to the end of this String.
+     *  Returns this string as the return value. */
+    method String appendChar(char c) {
+		if (~(length < max)){
+			do Sys.error(17);
+		}
+		let str[length] = c;
+		let length = length +1;
+		return this;
+    }
+
+    /** Erases the last character from this String. */
+    method void eraseLastChar() {
+    	if (length < 1){
+			do Sys.error(18);
+		}
+		let str[length] = 48;
+		let length = length - 1;
+		return;
+    }
+
+    /** Returns the integer value of this String until the first non
+     *  numeric character. */
+    method int intValue() {
+		var int s;
+		var int j;
+		var int d;
+		
+		if (str[0] = 45) {
+			let j = 1;
+		}
+		else {
+			let j = 0;
+		}
+		let s = 0;
+		while ((j < length) & (~ (str[j] < 48)) & (~(str[j] > 57))){
+			let d = str[j] - 48;
+			let s = d + (s*10);
+			let j = j + 1;
+		}
+		if (str[0] = 45) {
+			let s = -s;
+		}
+		return s;
+    }
+
+    /** Sets this String to hold a representation of the given number. */
+    method void setInt(int number) {
+		var int mod;
+		var int c;
+		var int l;
+		var int num;
+		let l = 0;
+		let num = Math.abs(number);
+		while (num > 0){
+			let num = num / 10;
+			let l = l +1;
+		}
+		if (number < 0){
+			let l = l + 1;
+		}
+		if ( l > max){
+			do Sys.error(19);
+		}
+		
+		let mod = Math.abs(number/10);
+		let mod = mod * 10;
+		let mod = Math.abs(number) - mod;
+		let c = mod + 48;
+		
+		if (Math.abs(number) < 10){
+			if (number < 0) {
+				let str[0] = 45;
+				let length = 1;
+			}
+			else {
+				let length = 0;
+			}
+			let str[length] = c;
+			let length = length + 1;
+		}
+		else {
+			do setInt(number / 10);
+			let str[length] = c;
+			let length = length + 1;
+		}
+		return;
+    }
+
+
+    /** Returns the new line character. */
+    function char newLine() {
+		return 128;
+    }
+
+    /** Returns the backspace character. */
+    function char backSpace() {
+		return 129;
+
+    }
+
+    /** Returns the double quote (") character. */
+    function char doubleQuote() {
+		return 34;
+    }
+}

@@ -1,0 +1,169 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Screen.jack
+
+/**
+ * Graphic screen library.
+ */
+class Screen {
+	static boolean color;
+	
+	
+    /** Initializes the Screen. */
+    function void init() {
+		let color = true;
+		return;
+    }
+
+    /** Erases the whole screen. */
+    function void clearScreen() {
+		var boolean old;
+		let old = color;
+		let color = false;
+		do Screen.drawRectangle(0 ,0 , 255, 511);
+		let color = old;
+		return;
+    }
+
+    /** Sets the color to be used in further draw commands
+     *  where white = false, black = true. */
+    function void setColor(boolean b) {
+		let color = b;
+		return;
+    }
+
+    /** Draws the (x, y) pixel. */
+    function void drawPixel(int x, int y) {
+		var int mod;
+		var int num, curr;
+		var int j;
+		
+		if (x > 511 | y > 255 | x < 0 | y < 0){
+			do Sys.error(7);
+		}
+		let mod = x / 16 ;
+		let mod = mod * 16;
+		let mod = x - mod;
+		let num = 1;
+		let j = 0;
+		while (j < mod) {
+			let num = num * 2;
+			let j = j + 1;
+		}
+		let curr = Memory.peek(16384 + (y*32) + (x/16));
+		if (color){
+			do Memory.poke(16384 + (y*32) + (x/16), (curr | num));
+		}
+		else {
+			do Memory.poke(16384 + (y*32) + (x/16), (curr & (~num)));
+		}
+		
+		return;
+    }
+
+    /** Draws a line from (x1, y1) to (x2, y2). */
+    function void drawLine(int x1, int y1, int x2, int y2) {
+
+		var int dx, dy, a, b;
+		var int adyminusbdx; 
+		
+		if (x1 > 511 |x1 <0 | y1 > 255 | y1 < 0| x2 > 511 | x2 < 0| y2 < 0| y2 > 255){
+			do Sys.error(8);
+		}
+		let dx = Math.abs(x2 - x1);
+		let dy = Math.abs(y2 - y1);
+		
+		let a = 0 ;
+		let b = 0 ;
+		let adyminusbdx = 0;
+		
+		/** vertical */
+		if (dx = 0){
+			while (~(b > dy)){
+				if (y1 > y2){
+					do Screen.drawPixel(x1, y1 - b);
+				}
+				else { 
+					do Screen.drawPixel(x1, y1 + b);
+
+				}
+				let b = b +1;
+			}
+		}
+		
+		while ( (~(a > dx)) & (~(b > dy))){
+			if ((x1 > x2) & (y1 > y2)){
+				do Screen.drawPixel(x1 -a, y1 - b);
+			}
+			if ((x1 > x2) & (~(y1 > y2))){
+				do Screen.drawPixel(x1 -a, y1 + b);
+			}
+			if ((~(x1 > x2)) & (~(y1 > y2))){
+				do Screen.drawPixel(x1 +a, y1 + b);
+			}
+			if ((~(x1 > x2)) & (y1 > y2)){
+				do Screen.drawPixel(x1 +a, y1 - b);
+			}
+			
+			if (~(adyminusbdx > 0)){
+				let a = a + 1;
+				let adyminusbdx = adyminusbdx + dy;
+			}
+			else {
+				let b = b +1;
+				let adyminusbdx = adyminusbdx - dx;
+			}
+		}
+		return;
+		
+    }
+
+    /** Draws a filled rectangle where the top left corner
+     *  is (x1, y1) and the bottom right corner is (x2, y2). */
+    function void drawRectangle(int x1, int y1, int x2, int y2) {
+		var int a, b;
+		if (x1 < 0 | x2 < 0 | y1 <0 | y2 < 0){
+			do Sys.error(9);
+		}
+		if ( x1 > 511 | y1 > 255 | x2 > 511 | y2 > 255){
+			do Sys.error(9);
+		}
+		if (x1 > x2 | y1 > y2){
+			do Sys.error(9);
+		}
+		let a = x1;
+		let b = y1;
+		while (a < x2){
+			while (b < y2){
+				do Screen.drawPixel(a,b);
+				let b = b +1;
+			}
+			let a = a +1;
+			let b = y1;
+		}
+		return;
+    }
+
+    /** Draws a filled circle of radius r around (cx, cy). */
+    function void drawCircle(int cx, int cy, int r) {
+		var int run;
+		if (cx < 0 | cy < 0){
+			do Sys.error(12);
+		}
+		if (cx < r | cy < r | cx + r > 511 | cy + r > 211){
+			do Sys.error(13);
+		}
+
+		if ( r > 181 | r <0){
+			do Sys.error(13);
+		}
+		let run = -r;
+		
+		while (~(run > r)){
+			do Screen.drawLine(cx - Math.sqrt(r*r - (run*run)), cy + run, cx + Math.sqrt(r*r - (run*run)), cy + run);
+			let run = run + 1;
+		}
+		return;
+    }
+}	

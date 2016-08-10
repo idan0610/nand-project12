@@ -1,0 +1,54 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Sys.jack
+
+/**
+ * A library of basic system services.
+ */
+class Sys {
+
+    /** Performs all the initializations required by the OS. */
+    function void init() {
+		do Keyboard.init();
+		do Memory.init();
+		do Output.init();
+		do Math.init();
+		do Screen.init();
+		do Main.main();
+		do Sys.halt();
+		return;
+    }
+
+    /** Halts execution. */
+    function void halt() {
+		while(true){}
+		return;
+    }
+
+    /** Waits approximately duration milliseconds and then returns. */
+    function void wait(int duration) {
+		var int loop1, loop2;
+		if (duration < 1){
+			do Sys.error(1);
+		}
+		let loop1 = 0;
+		let loop2 = 0;
+
+		while(loop1 < duration){
+			while(loop2 < 500){
+				let loop2 = loop2 +1;
+			}
+			let loop1 = loop1 +1;
+    	}
+    	return;
+	}
+
+    /** Prints the given error code in the form "ERR<errorCode>", and halts. */
+    function void error(int errorCode) {
+		do Output.printString("ERR");
+		do Output.printInt(errorCode);
+		do Sys.halt();
+		return;
+    }
+}

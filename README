@@ -1,0 +1,25 @@
+daph.kaplan, idan0610
+===============================================================================
+Dafna Kaplan, ID 204092613, dafna.kaplan@cs.huji.ac.il
+Idan Refaeli, ID 305681132, idan.refaeli@cs.huji.ac.il
+===============================================================================
+
+                           Project 12 - Operating System
+                           -------------------------------
+  
+
+Submitted Files
+---------------
+README 					- This file.
+Array.jack 				- Array class implementation
+Keyboard.jack			- Keyboard class implementation
+Math.jack 				- Math class implementation
+Memory.jack 			- Memory class implementation
+Output.jack 			- Output class implementation
+Screen.jack				- Screen class implementation
+String.jack				- String class implementation
+Sys.jack				- Sys class implementation
+
+Remarks
+-------
+implementing the classes for the OS to operate in jack.
